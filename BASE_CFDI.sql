@@ -1,0 +1,74 @@
+CREATE DATABASE DB_CFDI_DESCARGA;
+GO
+
+USE DB_CFDI_DESCARGA;
+GO
+
+CREATE TABLE USUARIO
+(
+	[Id] [int] IDENTITY(1,1) PRIMARY KEY,
+	[RFC] [varchar](13) NOT NULL,
+	[Nombre] [varchar](200) NULL,
+	[FechaRegistro] [datetime] NOT NULL DEFAULT GETDATE(),
+	[Activo] [bit] NOT NULL DEFAULT 1,
+	[PFXFile] [varbinary](max) NULL,
+	[fechaFin] [datetime2](7) NULL,
+	[NoCertificado] [varchar](20) NULL,
+	[PassUser] [varchar](max) NULL,
+	[PasswordKeyEncrypted] [varchar](max) NULL,
+);
+GO
+CREATE UNIQUE INDEX IX_USUARIO_RFC ON USUARIO(RFC);
+GO
+
+CREATE TABLE SOLICITUD_SAT
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    IdUsuario INT NOT NULL,
+    RequestIdSAT VARCHAR(100) NULL,
+    EstadoSolicitud VARCHAR(50) NOT NULL,
+    FechaSolicitud DATETIME NOT NULL DEFAULT GETDATE(),
+    FechaActualizacion DATETIME NULL,
+    TipoSolicitud VARCHAR(50) NULL,
+    UUIDSolicitado VARCHAR(50) NULL,
+    CodEstadoSAT VARCHAR(50) NULL,
+    MensajeSAT VARCHAR(MAX) NULL,
+    CONSTRAINT FK_SOLICITUD_USUARIO FOREIGN KEY(IdUsuario)    REFERENCES USUARIO(Id)
+);
+GO
+CREATE UNIQUE INDEX IX_SOLICITUD_SAT_RequestIdSAT ON SOLICITUD_SAT(RequestIdSAT);
+GO
+
+CREATE TABLE PAQUETE
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    IdSolicitud INT NOT NULL,
+    PackageIdSAT VARCHAR(100) NOT NULL,
+    ZipContenido VARBINARY(MAX),
+    Descargado BIT NOT NULL DEFAULT 0,
+    FechaDescarga DATETIME NULL,
+    CONSTRAINT FK_PAQUETE_SOLICITUD FOREIGN KEY(IdSolicitud) REFERENCES SOLICITUD_SAT(Id)
+);
+GO
+CREATE INDEX IX_PAQUETE_FechaDescarga ON PAQUETE(FechaDescarga);
+GO
+
+CREATE TABLE CFDI
+(
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    UUID VARCHAR(50) NOT NULL,
+    RFCEmisor VARCHAR(13) NULL,
+    RFCReceptor VARCHAR(13) NULL,
+    FechaEmision DATETIME NULL,
+    Total DECIMAL(18,2) NULL,
+    TipoComprobante VARCHAR(10) NULL,
+    EstadoComprobante VARCHAR(50) NULL,
+    RutaXML VARCHAR(MAX) NULL,
+    XmlContenido XML NULL,
+    FechaRegistro DATETIME NOT NULL DEFAULT GETDATE()
+);
+GO
+
+
+CREATE UNIQUE INDEX IX_CFDI_UUID ON CFDI(UUID);
+GO
