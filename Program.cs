@@ -32,6 +32,7 @@ builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(P
 builder.Services.AddScoped<PasswordProtector>();
 builder.Services.AddScoped<SatSolicitudFolioXmlBuilder>();
 builder.Services.AddScoped<SatXmlVerificarSolicitud>();
+builder.Services.AddScoped<SatDescargaSolicitudBuilder>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

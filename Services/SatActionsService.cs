@@ -20,13 +20,14 @@ namespace Descargar_CFDIS.Services
         private readonly SatAuthXmlBuilder _SatAuthXml;
         private readonly SatSolicitudFolioXmlBuilder _SatSolUUIDXml;
         private readonly SatXmlVerificarSolicitud _SatSolVeriXml;
+        private readonly SatDescargaSolicitudBuilder _SatDescargaXml;
         private readonly SatSoapClient _soapClient;
         private readonly AuthResponseParser _responseParser;
         private readonly ISatActionsRepository _actions;
         private readonly PasswordProtector _pass;
         public SatActionsService(CertificateService certificate, SatAuthXmlBuilder SatAuthXml, SatSoapClient soapClient, 
             AuthResponseParser responseParser, ISatActionsRepository actions, PasswordProtector pass, SatSolicitudFolioXmlBuilder SatSolUUIDXml,
-            SatXmlVerificarSolicitud SatSolVeriXml) 
+            SatXmlVerificarSolicitud SatSolVeriXml, SatDescargaSolicitudBuilder SatDescargaXml) 
         {
             _certificate = certificate;
             _SatAuthXml = SatAuthXml;
@@ -36,6 +37,7 @@ namespace Descargar_CFDIS.Services
             _pass = pass;
             _SatSolUUIDXml = SatSolUUIDXml;
             _SatSolVeriXml = SatSolVeriXml;
+            _SatDescargaXml = SatDescargaXml;
         }
         public async Task GeneraYRegistrarPfx(RegisterCertificateDTO user, int id)
         {
@@ -130,6 +132,27 @@ namespace Descargar_CFDIS.Services
 
             // return token;
             return resp;
+        }
+        public async Task<string> DescargaSolicitud(int id, string IdPaquete, string token)
+        {
+            var user = await _actions.ObtenerPfxPass(id);
+            if (user == null)
+            {
+                throw new EmptyException("No se encontro información");
+            }
+            X509Certificate2 cert = _certificate.CargarPfxSat(user.PfxFile, _pass.Unprotect(user.PasswordKeyEncrypted));
+            string xml = _SatDescargaXml.GenerarXmlDescargaSolicitud(cert, IdPaquete, user.RFC);
+
+            string response = await _soapClient.PostAsync(xml, SatEndpoints.SolDes, SatSoapActions.Descarga, token);
+
+            //string resp = _responseParser.ExtractIdSolicitud(response);
+
+            byte[] zipBytes = _responseParser.ExtractZipBytes(response);
+
+            string ruta = await _responseParser.GuardarZipAsync(zipBytes,@"C:\SAT\Descargas");
+
+            // return token;
+            return ruta;
         }
     }
 }

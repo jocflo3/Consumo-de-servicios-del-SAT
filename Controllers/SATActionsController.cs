@@ -39,8 +39,9 @@ namespace Descargar_CFDIS.Controllers
             return Ok();
         }
         [HttpPost("/Descargar")]
-        public async Task<IActionResult> DescargarSolicitud(string cveSolicitud)
+        public async Task<IActionResult> DescargarSolicitud(int id, string IdPaquete, string token)
         {
+            string resp = await _satActions.DescargaSolicitud(id, IdPaquete, token);
             return Ok();
         }
         [HttpPost("/RegistrarPfx")]

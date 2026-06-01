@@ -9,5 +9,6 @@ namespace Descargar_CFDIS.Interfaces.Service
         Task<string> AuthenticateAsync(int id);
         Task<string> GeneraSolicitudUUID(int id, string UUID, string token);
         Task<string> VerificaSolicitud(int id, string IdSolicitud, string token);
+        Task<string> DescargaSolicitud(int id, string IdPaquete, string token);
     }
 }
