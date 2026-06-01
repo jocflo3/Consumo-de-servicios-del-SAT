@@ -1,6 +1,7 @@
 ﻿using Descargar_CFDIS.DTOS;
 using Descargar_CFDIS.Interfaces.Service;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Descargar_CFDIS.Controllers
 {
@@ -8,15 +9,15 @@ namespace Descargar_CFDIS.Controllers
     [Route("api/[controller]")]
     public class SATController : ControllerBase
     {
-        private readonly ISatActionsService _satAuth;
-        public SATController(ISatActionsService satAuth) 
+        private readonly ISatActionsService _satActions;
+        public SATController(ISatActionsService satAct) 
         {
-            _satAuth = satAuth;
+            _satActions = satAct;
         }
         [HttpPost("/Auth")]
         public async Task<IActionResult> Autenticar(int id)
         {
-            string token =  await _satAuth.AuthenticateAsync(id);
+            string token =  await _satActions.AuthenticateAsync(id);
 
             return Ok(token);
         }
@@ -25,9 +26,16 @@ namespace Descargar_CFDIS.Controllers
         {
             return Ok();
         }
-        [HttpPost("/Verificar")]
-        public async Task<IActionResult> VerificarSolicitud(string cveSolicitud)
+        [HttpPost("/UUID")]
+        public async Task<IActionResult> GenerarSolicitudUUID(int id, string UUID, string token)
         {
+            string resp = await _satActions.GeneraSolicitudUUID(id, UUID, token);
+            return Ok();
+        }
+        [HttpPost("/Verificar")]
+        public async Task<IActionResult> VerificarSolicitud(int id, string IdSolicitud, string token)
+        {
+            string resp = await _satActions.VerificaSolicitud(id, IdSolicitud, token);
             return Ok();
         }
         [HttpPost("/Descargar")]
@@ -38,7 +46,7 @@ namespace Descargar_CFDIS.Controllers
         [HttpPost("/RegistrarPfx")]
         public async Task<IActionResult> RegistrarPfx(RegisterCertificateDTO arch, int id)
         {
-            await _satAuth.GeneraYRegistrarPfx(arch,id);
+            await _satActions.GeneraYRegistrarPfx(arch,id);
 
             return Ok();
         }

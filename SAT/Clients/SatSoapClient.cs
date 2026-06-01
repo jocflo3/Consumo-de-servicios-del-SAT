@@ -11,7 +11,7 @@ namespace Descargar_CFDIS.SAT.Clients
             _httpClient = httpClient;
         }
 
-        public async Task<string> PostAsync(string xml,string endpoint,string soapAction)
+        public async Task<string> PostAsync(string xml,string endpoint,string soapAction, string token ="")
         {
             StringContent content = new StringContent(xml,Encoding.UTF8,"text/xml");
 
@@ -20,6 +20,10 @@ namespace Descargar_CFDIS.SAT.Clients
             HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post,endpoint);
 
             request.Headers.Add("SOAPAction",soapAction);
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                request.Headers.Add("Authorization", $"WRAP access_token=\"{token}\"");
+            }
 
             request.Content = content;
 

@@ -1,3 +1,4 @@
+using CFDI_DESCARGA.SAT.Builders;
 using Descargar_CFDIS.Interfaces;
 using Descargar_CFDIS.Interfaces.Repository;
 using Descargar_CFDIS.Interfaces.Service;
@@ -29,7 +30,8 @@ builder.Services.AddScoped<AuthResponseParser>();
 builder.Services.AddHttpClient<SatSoapClient>();
 builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(builder.Environment.ContentRootPath,"Keys")));
 builder.Services.AddScoped<PasswordProtector>();
-
+builder.Services.AddScoped<SatSolicitudFolioXmlBuilder>();
+builder.Services.AddScoped<SatXmlVerificarSolicitud>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

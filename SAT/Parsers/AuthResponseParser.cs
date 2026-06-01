@@ -25,5 +25,15 @@ namespace Descargar_CFDIS.SAT.Parsers
 
             return tokenNode.InnerText;
         }
+        public string ExtractIdSolicitud(string xml)
+        {
+            XmlDocument doc = new();
+
+            doc.LoadXml(xml);
+
+            XmlNode node = doc.GetElementsByTagName("SolicitaDescargaFolioResult")[0];
+
+            return node?.Attributes?["IdSolicitud"]?.Value ?? throw new Exception("No se encontró IdSolicitud");
+        }
     }
 }

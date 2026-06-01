@@ -16,7 +16,8 @@ namespace Descargar_CFDIS.Repositories
         {
             var sql = @"SELECT 
                             PasswordKeyEncrypted,
-                            PFXFile
+                            PFXFile,
+                            RFC
                         FROM USUARIO 
                         WHERE Id = @Id";
             using var connection = _dapperContext.CreateConnection();
